@@ -54,7 +54,9 @@ app.post('/new', jsonParser, (req, res) => {
       console.log("data is: " + JSON.stringify(tempMergedData))
       const currentRatedHashtags = tempMergedData.hashtagInfo.map(e => e.hashtagName)
       tempMergedData.numSubmissions += 1;
-      tempMergedData.isRelatedCount += 1;
+      if (bodyData.isRelated) {
+        tempMergedData.isRelatedCount += 1;
+      }
       const mergedArray = tempMergedData.hashtags.concat(currentRatedHashtags);
       const uniqueArray = mergedArray.filter((value, index) => mergedArray.indexOf(value) === index);
       tempMergedData.hashtags = uniqueArray;
@@ -93,11 +95,16 @@ app.post('/new', jsonParser, (req, res) => {
         const hashtagValue = bodyData.htData[obj]
         hashtagInfo.push({hashtagName: obj, hashtagAvg: hashtagValue, hashtagSubmissions: 1, hashtagRatingArray: [hashtagValue]})
       })
+
+      let isRelatedNum = 0;
+      if (bodyData.isRelated) {
+        isRelatedNum = 1
+      }
       let h = new Hashtags({
         videoCategory: 'test',
         videoID: songID,
         numSubmissions: 1,
-        isRelatedCount: Math.floor(Math.random()*34),
+        isRelatedCount: isRelatedNum,
         hashtags: Object.keys(bodyData.htData),
         hashtagInfo: hashtagInfo,
       })
